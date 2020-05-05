@@ -1,1 +1,1 @@
-#Vocabulario: Práctrica con ficheros
+# Vocabulario: Práctrica con ficheros
