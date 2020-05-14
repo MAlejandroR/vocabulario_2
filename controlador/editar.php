@@ -1,63 +1,67 @@
 <?php
-$idioma=$_GET['idioma'] ?? $_POST['idioma'];
-
-function add_tema($idioma, $tema)
-{
-    var_dump ($idioma, $tema);
-    if (mkdir ("./../idiomas/$idioma/$tema"))
-        $msj="El directorio $tema se ha creado correctamente";
-    else
-        $msj="No se ha podido crear el directorio $tema ";
-    return $msj;
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
 
 
+require "funciones.php";
+
+//Leo el idioma, si vengo de administrar lo leo por get, si vengo de la misma página (editar)
+//lo leo por post
+//Si no tengo idioma entonces redirijo a administrar
+$idioma=$_GET['idioma'] ?? $_POST['idioma'] ?? null;
+
+
+//Si no tengo idioma nos vamos
+//Este caso se puede producir si escribo directamente esta url
+if (empty($idioma)) {
+    header ("Location:administrar.php");
+    die();
 }
 
-function leer_temas($idioma)
-{
-    $temas=scandir ("./../idiomas/$idioma");
-    if (count ($temas) > 0) {
-        $pos=array_search (".", $temas);
-        unset ($temas[$pos]);
-        $pos=array_search ("..", $temas);
-        unset ($temas[$pos]);
-    }
-    return $temas;
-}
+if (isset($_POST['submit'])) { //Para evitar warning si vengo por GET (administrar.php
 
-
-if (isset($_POST['submit'])) {
     switch ($_POST['submit']) {
         case "Añadir":
             $tema=$_POST['tema_new'];
-            $msj=add_tema ($idioma, $tema);
+            if (empty($tema))
+                $msj="Debes escribir un tema para crear el directorio";
+            else
+                $msj=add_dir ("$idioma/$tema");
             break;
         case "Borrar":
             $tema=$_POST['tema'];
-            var_dump ($_POST);
-            //Sería bueno preguntar antes de borrar
-            if (rmdir ("./../idiomas/$idioma/$tema"))
-                $msj="Se ha borrado el dir del tema $tema de  $idioma";
+            if (empty($tema))
+                $msj="Debes seleccionar un tema para borrarlo";
             else
-                $msj="No se ha borrado el dir del tema $tema de  $idioma";
+                $msj=del_dir ("$idioma/$tema");
             break;
-
         case "Editar":
-            $idioma=$_POST['idioma'];
             header ("Location:editar.php?idioma=$idioma");
             exit ();
+        case "Añadir volcabulario";
+            $tema=$_POST['tema'];
+            if (empty($tema))
+                $msj="Debes seleccionar un tema para añadir vocabulario";
+            else {
+                header ("Location:add_vocabulario.php?idioma=$idioma&tema=$tema");
+                exit ();
+            }
+            break;
+        case "Ver imágenes";
+            $tema=$_POST['tema']??null;
+            if (empty($tema))
+                $msj="Debes seleccionar un tema para añadir vocabulario";
+            else {
+                $html_imagenes=get_html_imagenes ("$idioma/$tema");
+            }
             break;
         case "Volver":
             $idioma=$_POST['idioma'];
             header ("Location:administrar.php");
             exit();
-            break;
-
     }
-
 }
-
-$temas=leer_temas ($idioma) ?? [];
+$temas=get_dir ("$idioma") ?? [];
 ?>
 
 <!doctype html>
@@ -82,6 +86,8 @@ $temas=leer_temas ($idioma) ?? [];
                 echo "<input type='radio' name='tema' value='$tema'><label>$tema</label><br />\n";
 
             echo "<br /><br /><input type=submit value='Borrar' name='submit' >\n";
+            echo "<input type='submit' name='submit' value='Añadir volcabulario'>\n";
+            echo "<input type='submit' name='submit' value='Ver imágenes'>\n";
         } else
             echo "<h2>Actualmente no hay temas para el $idioma</h2>\n";
         ?>
@@ -90,13 +96,15 @@ $temas=leer_temas ($idioma) ?? [];
     <fieldset>
         <legend>Agregar nuevos temas</legend>
 
-        <input type="text" name="tema_new" id="">
-        <input type="submit" name="submit" value="Añadir" >
+        <input type="text" name="tema_new">
+        <input type="submit" name="submit" value="Añadir">
+
     </fieldset>
     <input type="hidden" name="idioma" value='<?= $idioma ?>'>
     <hr/>
     <input type="submit" name="submit" value='Volver'>
 
 </form>
+<?= $html_imagenes ??"" ?>
 </body>
 </html>

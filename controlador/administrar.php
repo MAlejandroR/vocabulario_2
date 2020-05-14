@@ -1,59 +1,28 @@
 <?php
+require_once "funciones.php";
 
-//Mostrtar los idiomas actualmente creados
-//Dar la posibilidad de crear nuevos idiomas
-function leer_idiomas()
-{
-    $idiomas=scandir ("./../idiomas");
-    if (count ("idiomas") > 0) {
-        $pos=array_search (".", $idiomas);
-        unset ($idiomas[$pos]);
-        $pos=array_search ("..", $idiomas);
-        unset ($idiomas[$pos]);
-    }
-
-    return $idiomas;
-}
-
-function add_idioma($idioma)
-{
-    if (mkdir ("./../idiomas/$idioma"))
-        $msj="El directorio $idioma se ha creado correctamente";
-    else
-        $msj="No se ha podido crear el directorio $idioma ";
-    return $msj;
-
-
-}
-
+//Si he presionado algún submit en esta página o recurso (administrar.php)
 if (isset($_POST['submit'])) {
-    switch ($_POST['submit']) {
-        case "Añadir":
-            $idioma=$_POST['idioma'];
-            $msj=add_idioma ($idioma);
-            var_dump ($idioma);
-            var_dump ($msj);
-            break;
-        case "Borrar":
-            $idioma = $_POST['idioma'];
-            //Sería bueno preguntar antes de borrar
-            if (rmdir ("./../idiomas/$idioma"))
-                $msj="Se ha borrado el dir de idiomas $idioma";
-            else
-                $msj="No se ha podido borrar  borrado el dir de idiomas $idioma";
-            break;
-
-        case "Editar":
-            $idioma=$_POST['idioma'];
-            header ("Location:editar.php?idioma=$idioma");
-            break;
-
-    }
-
+    //Leo idioma o del input radio (idioma) o de la caja de texto (idioma_new)
+    $idioma = $_POST ['idioma']??  $_POST ['idioma_new'];
+    if (empty($idioma))
+        $msj="Debe seleccionar un idioma para interactuar";
+    else
+        switch ($_POST['submit']) {
+            case "Añadir":
+                $msj=add_dir ($idioma);
+                break;
+            case "Borrar":
+                //Sería bueno preguntar antes de borrar
+                $msj=del_dir ($idioma);
+                break;
+            case "Editar":
+                header ("Location:editar.php?idioma=$idioma");
+                exit();
+        }
 }
-$idiomas=leer_idiomas () ?? [];
-
-
+//Leemos los idiomas que hay (directorios del dir idiomas), por defecto un array vacío
+$idiomas=get_dir (null) ?? [];
 
 ?>
 
@@ -66,36 +35,36 @@ $idiomas=leer_idiomas () ?? [];
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="../css/estilo.css">
-    <title>Document</title>
+    <title>adm idiomas</title>
 </head>
 <body>
 <h1>Administrar</h1>
 <h3><?= $msj ?? "" ?></h3>
-
-<fieldset>
-    <legend>Idiomas actuales</legend>
-    <form action="administrar.php" method="POST">
+<form action="administrar.php" method="POST">
+    <fieldset>
+        <legend>Idiomas actuales</legend>
         <?php
-        if (count ($idiomas) > 0) {
-            echo "<h2>Selecciona editar para agregar temas en el idioma</h2>";
+        if (count ($idiomas) > 0) { //Si hay idiomas los muestro
+            echo "<h2>Selecciona editar para agregar temas en el idioma</h2>\n";
             foreach($idiomas as $idioma)
-                echo "<input type='radio' name='idioma' value ='$idioma'><label>$idioma</label><br />";
+                echo "\t\t<input type='radio' name='idioma' value ='$idioma'>\n<label>$idioma</label><br />\n";
             echo "<br />";
-            echo "<input type=submit value='Borrar' name='submit' >";
-            echo "<input type=submit value='Editar' name='submit' >";
-        } else
+            echo "\t\t<input type=submit value='Borrar' name='submit' >\n";
+            echo "\t\t<input type=submit value='Editar' name='submit' >\n";
+        } else //si no hay idiomas, lo digo
             echo "<h2>Actualmente no hay idiomas</h2>";
         ?>
-    </form>
-</fieldset>
-<fieldset>
-    <legend>Agregar nuevos idiomas</legend>
-    <form action="administrar.php" method="POST">
-        <input type="text" name="idioma" id="">
+    </fieldset>
+    <fieldset>
+        <legend>Agregar nuevos idiomas</legend>
+        <input type="text" name="idioma_new" id="">
         <input type="submit" value="Añadir" name="submit">
-    </form>
-</fieldset>
-
+    </fieldset>
+</form>
+<hr />
+<form action="./../index.php" method="POST">
+    <input type="submit" value="Volver" name="submit">
+</form>
 
 </body>
 </html>

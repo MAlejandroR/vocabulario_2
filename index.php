@@ -1,12 +1,12 @@
 <?php
-if (isset($_POST['submit'])){
-    switch ($_POST['submit']){
+if (isset($_POST['submit'])) {
+    switch ($_POST['submit']) {
         case "Administrar":
             header ("Location:./controlador/administrar.php");
-            break;
+            exit();
         case "Jugar":
             header ("Location:./controlador/jugar.php");
-            break;
+            exit();
     }
 }
 ?>
@@ -25,8 +25,8 @@ if (isset($_POST['submit'])){
 <fieldset>
     <legend>Selecciona acción</legend>
     <form action="index.php" method="POST">
-       <input type="submit" value="Administrar" name="submit">
-       <input type="submit" value="Jugar" name="submit">
+        <input type="submit" value="Administrar" name="submit">
+        <input type="submit" value="Jugar" name="submit">
     </form>
 </fieldset>
 
