@@ -1,8 +1,4 @@
 <?php
-error_reporting(E_ALL);
-ini_set("display_errors", 1);
-
-
 require "funciones.php";
 
 //Leo el idioma, si vengo de administrar lo leo por get, si vengo de la misma página (editar)

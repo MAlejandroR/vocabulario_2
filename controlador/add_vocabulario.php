@@ -5,6 +5,7 @@ foreach($idiomas as $idioma){
         continue;
 }
 $tema=trim ($_GET['tema'] ?? $_POST['tema']);
+$idioma=trim ($_GET['idioma'] ?? $_POST['idioma']);
 
 
 //Si no hubiera cualquiera de los dos valores. volvemos al index
