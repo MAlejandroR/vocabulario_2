@@ -1,14 +1,5 @@
 <?php
-if (isset($_POST['submit'])) {
-    switch ($_POST['submit']) {
-        case "Administrar":
-            header ("Location:./controlador/administrar.php");
-            exit();
-        case "Jugar":
-            header ("Location:./controlador/jugar.php");
-            exit();
-    }
-}
+
 ?>
 
 <!doctype html>
