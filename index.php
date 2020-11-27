@@ -13,12 +13,10 @@
     <title>Vocabulario en idiomas</title>
 </head>
 <body>
+    <h1> Aplicación para vocabulario </h1>  
 <fieldset>
-    <legend>Selecciona acción</legend>
-    <form action="index.php" method="POST">
-        <input type="submit" value="Administrar" name="submit">
-        <input type="submit" value="Jugar" name="submit">
-    </form>
+    <legend></legend>
+    
 </fieldset>
 
 
